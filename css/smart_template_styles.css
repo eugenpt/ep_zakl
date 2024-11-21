@@ -1,0 +1,428 @@
+
+[contenteditable]:focus-visible {
+  outline: 0px solid transparent;
+  background-color: #f8f8f8;
+}
+
+
+.selector {
+	background-color: #aff;
+	border-radius: 0.5rem;
+	display: inline;
+	padding: 0 0.5rem;
+	position: relative;
+
+	min-height: 1.5rem;
+
+	cursor: pointer;
+}
+
+div.p {
+	text-align: justify;
+  text-indent: 1cm;
+  margin: 0px;
+
+  font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,Cantarell,'Open Sans','Helvetica Neue',sans-serif;
+  line-height: 1.4;
+}
+
+#livesearch {
+  font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,Cantarell,'Open Sans','Helvetica Neue',sans-serif;
+  line-height: 1.4;
+}
+
+.no-indent div.p {
+  text-indent: 0cm;
+}
+
+/*div.p div{
+	text-indent: 0px;
+}*/
+
+div.number1-selector, div.number3-selector{
+	text-indent: 0px;
+	font-family: monospace;
+}
+
+div.number{
+	display: inline;
+	position: relative;
+	cursor: pointer;
+}
+
+div.number.fresh span {
+	background-color: #fda;
+}
+
+div.number1-selector{
+/*	width:300;*/
+
+}
+
+div.number.st-show span.selector-content{
+	visibility:hidden;
+}
+
+div.number span.temp-number-display{
+	background-color: #fda;
+	display: none;
+	position: absolute;
+	z-index: 100;
+	left: 0%;
+	top:-0.2rem;
+}
+div.number.st-show span.temp-number-display{
+	display: block;
+	text-indent: 0cm;
+}
+
+div.number2-selector, div.number2dash-selector{
+	min-width: 20rem;
+	min-height: 20rem;
+	max-width: 20rem;
+	max-height: 20rem;
+background-image: 
+    linear-gradient(180deg,
+    	transparent 0%,
+    	transparent 4.5%,
+    	rgba(0,0,0, 0.2) 5%, /* 2 */
+    	transparent 5.5%,
+    	transparent 9.5%,
+    	rgba(0,0,0, 0.2) 10%, /* 3 */
+    	transparent 10.5%,
+    	transparent 14.5%,
+    	rgba(0,0,0, 0.2) 15%, /* 4 */
+    	transparent 15.5%,
+    	transparent 17%,
+    	rgba(0,0,0, .2) 18%, /* 5 */
+    	rgba(0,0,0, .2) 22%,
+    	transparent 23%,
+    	transparent 24.5%,
+    	rgba(0,0,0, 0.2) 25%, /* 6 */
+    	transparent 25.5%,
+    	transparent 29.5%,
+    	rgba(0,0,0, 0.2) 30%, /* 7 */
+    	transparent 30.5%,
+    	transparent 34.5%,
+    	rgba(0,0,0, 0.2) 35%, /* 8 */
+    	transparent 35.5%,
+    	transparent 39.5%,
+    	rgba(0,0,0, 0.2) 40%, /* 9 */
+    	transparent 40.5%,
+    	transparent 42%, 
+    	rgba(0,0,0, .2) 43%,  /* 10 */
+    	rgba(0,0,0, .2) 47%,
+    	transparent 48%,
+    	transparent 65.5%,
+    	rgba(0,0,0, 0.2) 66%,  /* 20 */
+    	transparent 66.5%,
+    	transparent 73.5%,
+    	rgba(0,0,0, 0.2) 74%,  /* 30 */
+    	transparent 74.5%,
+    	transparent 81%,
+    	rgba(0,0,0, 0.2) 81.5%,  /* 40 */
+    	transparent 82%,
+    	transparent 84%, 
+    	rgba(0,0,0, .2) 85%,  /* 50 */
+    	rgba(0,0,0, .2) 87%,
+    	transparent 88%,
+    	transparent 88.5%,
+    	rgba(0,0,0, 0.2) 89%,   /* 60 */
+    	transparent 89.5%,
+    	transparent 91.7%,
+    	rgba(0,0,0, 0.2) 92.2%,   /* 70 */
+    	transparent 92.7%,
+    	transparent 94.7%,
+    	rgba(0,0,0, 0.2) 95.2%,   /* 80 */
+    	transparent 95.7%,
+    	transparent 97.2%,
+    	rgba(0,0,0, 0.2) 97.7%,   /* 90 */
+    	transparent 98.2%,
+    	transparent 99%, 
+    	rgba(0,0,0, .2) 100%
+    ),
+    linear-gradient(90deg,
+    	transparent 0%,
+    	transparent 4.5%,
+    	rgba(0,0,0, 0.2) 5%, /* 2 */
+    	transparent 5.5%,
+    	transparent 9.5%,
+    	rgba(0,0,0, 0.2) 10%, /* 3 */
+    	transparent 10.5%,
+    	transparent 14.5%,
+    	rgba(0,0,0, 0.2) 15%, /* 4 */
+    	transparent 15.5%,
+    	transparent 17%,
+    	rgba(0,0,0, .2) 18%, /* 5 */
+    	rgba(0,0,0, .2) 22%,
+    	transparent 23%,
+    	transparent 24.5%,
+    	rgba(0,0,0, 0.2) 25%, /* 6 */
+    	transparent 25.5%,
+    	transparent 29.5%,
+    	rgba(0,0,0, 0.2) 30%, /* 7 */
+    	transparent 30.5%,
+    	transparent 34.5%,
+    	rgba(0,0,0, 0.2) 35%, /* 8 */
+    	transparent 35.5%,
+    	transparent 39.5%,
+    	rgba(0,0,0, 0.2) 40%, /* 9 */
+    	transparent 40.5%,
+    	transparent 42%, 
+    	rgba(0,0,0, .2) 43%,  /* 10 */
+    	rgba(0,0,0, .2) 47%,
+    	transparent 48%,
+    	transparent 65.5%,
+    	rgba(0,0,0, 0.2) 66%,  /* 20 */
+    	transparent 66.5%,
+    	transparent 73.5%,
+    	rgba(0,0,0, 0.2) 74%,  /* 30 */
+    	transparent 74.5%,
+    	transparent 81%,
+    	rgba(0,0,0, 0.2) 81.5%,  /* 40 */
+    	transparent 82%,
+    	transparent 84%, 
+    	rgba(0,0,0, .2) 85%,  /* 50 */
+    	rgba(0,0,0, .2) 87%,
+    	transparent 88%,
+    	transparent 88.5%,
+    	rgba(0,0,0, 0.2) 89%,   /* 60 */
+    	transparent 89.5%,
+    	transparent 91.7%,
+    	rgba(0,0,0, 0.2) 92.2%,   /* 70 */
+    	transparent 92.7%,
+    	transparent 94.7%,
+    	rgba(0,0,0, 0.2) 95.2%,   /* 80 */
+    	transparent 95.7%,
+    	transparent 97.2%,
+    	rgba(0,0,0, 0.2) 97.7%,   /* 90 */
+    	transparent 98.2%,
+    	transparent 99%, 
+    	rgba(0,0,0, .2) 100%
+    )
+    ,
+    linear-gradient(45deg,
+    	transparent 0%,
+    	transparent 49.9%,
+    	rgba(0,0,0, 1) 50%,
+    	transparent 50.1%,
+    	transparent 100%
+    );
+
+    height:100%;
+  background-size:100% 100%;
+transform: translate(20px -10px) rotate(30deg);
+}
+
+div.number span.number2-grid{
+	position: absolute;
+    transform: translate(-50%, -50%);
+    text-indent: 0px;
+    background-color: rgba(200,200,200,1);
+    border-radius: 1.5rem;
+    width: 1.5rem;
+    text-align: center;
+    height: 1.5rem;
+    vertical-align: middle;
+}
+
+span.number2-grid-5{
+    top: 20%;
+    left: 20%;
+}
+
+span.number2-grid-10{
+    top: 45%;
+    left: 45%;
+}
+
+span.number2-grid-50{
+    top: 86%;
+    left: 86%;
+}
+
+.st-dropdown-content ul {
+    list-style-type: none;
+    padding:0 0.5rem;
+}
+
+.selector-content:empty {
+	content: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNMjQgMTBoLTEwdi0xMGgtNHYxMGgtMTB2NGgxMHYxMGg0di0xMGgxMHoiLz48L3N2Zz4=");
+	transform: scale(0.5) translate(0px, 50%);
+
+}
+.selector-content:empty:hover {
+/*	cursor: pointer;*/
+}
+
+
+.st-controls{
+	display: flex;
+   position: absolute;
+   left:-70px;
+   width: 65px;
+ height:100%;
+}
+
+.st-controls-del{
+	background-image: linear-gradient(79deg, #fff 0%, #fcc 50%, #fff 100%);
+}
+
+.st-controls div{
+	cursor: pointer;
+	width: 30px;
+	height: 	100%;
+}
+
+.st-controls-copy{
+	background-image: linear-gradient(79deg, #ccf 0%, #fff 50%, #ccf 100%);
+}
+
+.st-controls-join{
+	background-image: linear-gradient(79deg, #fff 0%, #cfc 50%, #fff 100%);
+}
+
+.st-controls-del-hover {
+	background-color: #fcc;
+}
+
+.st-controls-copy-hover {
+	background-color: #ccf;
+}
+
+.st-controls-join-hover {
+	background-color: #cfc;
+}
+
+.st-dropdown-content {
+    display: none;
+    position: absolute;
+    left:0%;
+    background-color: #fdfdfd;
+    min-width: 10rem;
+    border: 1px solid #ddd;
+    z-index: 10;
+}
+
+.st-show .st-dropdown-content {
+    display: block;
+}
+
+.st-selector-list-elt{
+	border-top: 1px solid #ddd;
+	border-bottom: 1px solid #ddd;
+
+	min-height: 2rem;
+	min-width: 2rem;
+	text-indent: 0px;
+
+	min-width: 20rem;
+}
+
+.st-selector-list-elt:hover{
+	background-color: #ddf;
+}
+
+/*
+
+LIVESEARCH
+
+*/
+
+#livesearch ul{
+  padding-inline-start: 0px;
+  margin-block-start: 0px;
+  margin-block-end: 0px;
+}
+
+#livesearch li.selected{
+  background-color: #fff;
+}
+
+
+
+
+/* The switch - the box around the slider */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 35px;
+  height: 19px;
+}
+
+/* Hide default HTML checkbox */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* The slider */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 12px;
+  width: 12px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(15px);
+  -ms-transform: translateX(15px);
+  transform: translateX(15px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 16px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+/*button.smart-on {
+	background-color: #ccf;
+}
+*/
+
+#nosmart_text{
+	color: black;
+}
+.smart-on #nosmart_text{
+	color: gray;
+}
+#smart_text {
+	color: gray;
+}
+.smart-on #smart_text{
+	color: blue;	
+}
+
+.bold {
+	font-weight: bold;
+}

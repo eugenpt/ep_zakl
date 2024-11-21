@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple HTML Page</title>
+
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/write.css">
+    <link rel="stylesheet" href="css/smart_template_styles.css">
+    <script src="js/misc.js"></script>
+<!-- <script src="static/suggestions.js"></script> -->
+<script src="js/smart_template_fun.js"></script>
+<!-- <script src="static/js/xero_funs.js"></script> -->
+<script src="js/text_proc.js"></script>
+<!-- <script src="js/zakl_templates.js"></script> -->
+<script>
+
+  function setText(id, text, noprep){
+    console.log("set "+id+" text("+text.length+") "+(noprep?"noprep":""));
+    makeAndFillEditorContent(_('#smart-'+id), replaceLineStartWith(text, ''));
+  }
+
+    function onBodyLoad(){
+      _ST.init(_('#smart-opis'));
+      _ST.init(_('#smart-zakl'));        
+    }
+</script>
+</head>
+<body onload="onBodyLoad();" onclick="onBodyClick();">
+    <div class="container-fluid">
+        <div class="container py-4 text-center sheet-width">
+            <h1>Welcome to EP ZAKL</h1>
+            <p class="sectionTitle">Описание:</p>
+            <div id="smart-opis" class="smart" style="" contenteditable="true"></div>
+            <p class="sectionTitle zakl">Заключение:</p>
+            <div id="smart-zakl" class="smart"style="" contenteditable="true"></div>
+        </div>  
+    </div>
+
+
+
+<div class="smart smart-control" style="">
+  <button onclick="undo();" title="Отменить последнее действие">↶</button>
+  <button onclick="redo();" title="Вернуть отмену последнего">↷</button>
+</div>
+
+<div id="overlay" onclick="overlay_off();">
+    <div id="overlay-content" class="sheet-width">
+        <div id="draftUpperControls"><select id="draftSelect" style="display: none;"></select><button id="btnDraftApply2">Использовать</button></div>
+        <span id="overlay_text_span"></span>
+        <div id="draftButtons" style="display: none;">
+          <button id="btnDraftApply">Использовать</button>
+          <button id="btnCancel" onclick="overlay_off();">Отмена</button>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
