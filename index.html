@@ -8,6 +8,9 @@
     <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/write.css">
     <link rel="stylesheet" href="css/smart_template_styles.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
+
     <script src="js/misc.js"></script>
 <!-- <script src="static/suggestions.js"></script> -->
 <script src="js/smart_template_fun.js"></script>
@@ -16,18 +19,209 @@
 <!-- <script src="js/zakl_templates.js"></script> -->
 <script>
 
+    _TRIE = null;
+
+
+    // Example usage
+    const zipFileUrl = 'filtered_trie2_ALL_MAX8_MINC20.zip';
+
+    // Open IndexedDB
+    const dbName = 'trieDB';
+    const dbVersion = 2;
+    const objectStoreName = 'trieStore';
+
+    let db;
+
+
+
+async function loadAndUnzip(url) {
+    try {
+        // Fetch the ZIP file from the server
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        const arrayBuffer = await response.arrayBuffer();
+
+        // Load the ZIP file into JSZip
+        const zip = await JSZip.loadAsync(arrayBuffer);
+
+        // Iterate through the files in the ZIP archive
+        zip.forEach(async (relativePath, zipEntry) => {
+            if (!zipEntry.dir) {
+                // Read the file content
+                const fileContent = await zipEntry.async('string');
+                try {
+                    // Parse the file content as JSON
+                    const jsonContent = JSON.parse(fileContent);
+                    console.log(`File: ${relativePath}`);
+                    _TRIE = jsonContent;
+
+
+
+                    const openRequest = indexedDB.open(dbName, dbVersion);
+
+                    openRequest.onupgradeneeded = function(event) {
+                        console.log("onupgradeneeded")
+                        db = event.target.result;
+                        if (!db.objectStoreNames.contains(objectStoreName)) {
+                            console.log('AA');
+                            const objectStore = db.createObjectStore(objectStoreName, { keyPath: 'path' });
+                        } else {
+                            console.log('BB');
+                            objectStore = event.target.transaction.objectStore(objectStoreName);
+                        }
+                        if (!objectStore.indexNames.contains('path')) {
+                            objectStore.createIndex('path', 'path', { unique: false });
+                        }
+                        if (!objectStore.indexNames.contains('count')) {
+                            objectStore.createIndex('count', 'count', { unique: false });
+                        }
+                        console.log("/onupgradeneeded")
+                    };
+
+                    openRequest.onsuccess = function(event) {
+                        db = event.target.result;
+                        loadTrieIntoDatabase(_TRIE);
+                    };
+
+                    openRequest.onerror = function(event) {
+                        console.error('Error opening database:', event.target.error);
+                    };
+
+
+                } catch (parseError) {
+                    console.error(`Error parsing JSON content for file ${relativePath}:`, parseError);
+                }
+            }
+        });
+    } catch (error) {
+        console.error('Error loading and unzipping the file:', error);
+    }
+}
+
+
+
+        function loadTrieIntoDatabase(trie, path = '') {
+            const transaction = db.transaction(objectStoreName, 'readwrite');
+            const objectStore = transaction.objectStore(objectStoreName);
+
+            nc = 0;
+            function insertTrieNode(node, currentPath) {
+                if (node[".count"] !== undefined) {
+                    const getRequest = objectStore.get(currentPath);
+                    getRequest.onsuccess = function(event) {
+                        if (!event.target.result) {
+                            objectStore.add({ path: currentPath, count: node.count });
+
+                        }
+                    };
+                    getRequest.onerror = function(event) {
+                        console.error('Error checking for existing path:', event.target.error);
+                    };
+
+
+                            // nc = nc + 1;
+                            // if(nc>1000){
+                            //     return
+                            // }
+                }
+                for (const key in node) {
+                    if (key !== '.count') {
+                        insertTrieNode(node[key], currentPath + (currentPath ? ' ' : '') + key);
+                    }
+                }
+            }
+
+            insertTrieNode(trie, path);
+
+            transaction.oncomplete = function() {
+                console.log('TRIE data loaded into IndexedDB');
+            };
+
+            transaction.onerror = function(event) {
+                console.error('Error loading TRIE data:', event.target.error);
+                console.log(event)
+            };
+        }
+
+        function listTopRecords(limit = 100) {
+            const transaction = db.transaction(objectStoreName, 'readonly');
+            const objectStore = transaction.objectStore(objectStoreName);
+            const index = objectStore.index('count');
+            const request = index.openCursor(null, 'prev');
+            const topRecords = [];
+
+            request.onsuccess = function(event) {
+                const cursor = event.target.result;
+                if (cursor) {
+                    topRecords.push(cursor.value);
+                    if (topRecords.length >= limit) {
+                        console.log('Top Records:', topRecords);
+                        return;
+                    }
+                    cursor.continue();
+                } else {
+                    console.log('Top Records:', topRecords);
+                }
+            };
+
+            request.onerror = function(event) {
+                console.error('Error retrieving top records:', event.target.error);
+            };
+        }
+        function searchSubPhrase(phrase) {
+            const transaction = db.transaction(objectStoreName, 'readonly');
+            const objectStore = transaction.objectStore(objectStoreName);
+            const index = objectStore.index('path');
+            const range = IDBKeyRange.bound(phrase, phrase + '\uffff');
+            const request = index.openCursor(range);
+
+            request.onsuccess = function(event) {
+                const cursor = event.target.result;
+                if (cursor) {
+                    console.log('Found:', cursor.value);
+                    cursor.continue();
+                } else {
+                    console.log('Search complete');
+                }
+            };
+
+            request.onerror = function(event) {
+                console.error('Error searching sub-phrase:', event.target.error);
+            };
+        }
+
+
+
+
+
+
+
+
   function setText(id, text, noprep){
     console.log("set "+id+" text("+text.length+") "+(noprep?"noprep":""));
     makeAndFillEditorContent(_('#smart-'+id), replaceLineStartWith(text, ''));
   }
 
+    function onBodyClick(){
+      dropdown_click = 0
+    }
+
     function onBodyLoad(){
       _ST.init(_('#smart-opis'));
       _ST.init(_('#smart-zakl'));        
     }
+
+    function onTestClick(e){
+        console.log(e);
+
+        loadAndUnzip(zipFileUrl);
+    }
 </script>
 </head>
 <body onload="onBodyLoad();" onclick="onBodyClick();">
+    <button id="btnTest" onclick="onTestClick(this);">TEST</button>
     <div class="container-fluid">
         <div class="container py-4 text-center sheet-width">
             <h1>Welcome to EP ZAKL</h1>
