@@ -151,6 +151,8 @@ function fixEverything(editor){
 
 		editor.getElementsByTagName('div').forEach((e)=>{e.style=''});
 		editor.getElementsByTagName('span').forEach((e)=>{e.style=''});
+
+		fixAllSelectorDOMActions(editor);
 	console.timeEnd('fixEverything');
 }
 
@@ -1020,6 +1022,11 @@ function checkAndFixSelectors(editor){
 		editor.getElementsByClassName("selector")
 					.filter(isSelectorMissingContent)
 					.forEach(fixSelector);
+}
+
+function fixAllSelectorDOMActions(editor){
+		editor.getElementsByClassName("selector")
+					.forEach(updateSelectorDOMactions);
 }
 
 function checkAndFixAnyNumber(editor, type){

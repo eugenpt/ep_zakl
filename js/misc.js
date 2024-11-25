@@ -398,12 +398,13 @@ function date2rustr(date, sep){
     return int2str_w_zeros(date.getDate(),2)+sep+int2str_w_zeros(date.getMonth()+1,2) +sep+ int2str_w_zeros(date.getFullYear(),4);
 }
 
-function date2timestr(date, add_seconds){
+function date2timestr(date, add_seconds,sep){
     date = date || new Date();
     if(date.getDate==undefined){
         date = new Date(date);
     }
-    let sep = ':';
+    if(sep == undefined)
+        sep = ':';
     return int2str_w_zeros(date.getHours(),2)+sep+int2str_w_zeros(date.getMinutes(),2) + (add_seconds? sep+ int2str_w_zeros(date.getSeconds(),2) : '');
 }
 

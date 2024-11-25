@@ -8,8 +8,9 @@
     <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/write.css">
     <link rel="stylesheet" href="css/smart_template_styles.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/docx@9.0.3/build/index.umd.min.js"></script>
 
     <script src="js/misc.js"></script>
 <!-- <script src="static/suggestions.js"></script> -->
@@ -18,6 +19,7 @@
 <script src="js/text_proc.js"></script>
 <script src="js/default_templates.js"></script>
 <script src="js/trie_and_db.js"></script>
+<script src="js/docx_work.js"></script>
 
 
 <!-- <script src="js/zakl_templates.js"></script> -->
@@ -29,6 +31,8 @@
     // Example usage
     const zipFileUrl = 'filtered_trie2_ALL_MAX8_MINC20.zip';
 
+    const LINE_START = '    '
+
     // Open IndexedDB
     const dbName = 'trieDB';
     const dbVersion = 2;
@@ -37,7 +41,24 @@
     let db;
 
 
+  function prepContent(c, keep_whitespace_line_start){
+    return prep_innerText_for_content(
+      c, 
+      keep_whitespace_line_start, 
+      _('#cbIndent').checked ? LINE_START : ''
+    )
+  }
 
+  function getText(id, do_html){
+    var s = getEditorSmartContent(_('#smart-'+id));//.innerText;
+    s =  (s=='\n')?'':s;
+
+    if(do_html){
+      return s;
+    }else{
+      return prepContent(s, 0);
+    }
+  }
 
   function setText(id, text, noprep){
     console.log("set "+id+" text("+text.length+") "+(noprep?"noprep":""));
@@ -57,9 +78,43 @@
       setText('zakl', temp[1])
   }
 
+
+function onAddNewline(){
+  linestart = (_('#cbIndent').checked?LINE_START:'');
+  newline = '\n' + linestart;
+  re = new RegExp('([^\\n'+linestart+'])'+newline+'([^\\n])','gi');
+  ['opis','zakl'].forEach(function(id){
+    setText(id, getText(id).replaceAll(re,'\$1\n\n\$2'));
+  })
+}
+
+function onRemoveNewline(){
+  linestart = (_('#cbIndent').checked?LINE_START:'');
+  newline = '\n' + linestart;
+  re = new RegExp('([^\\n'+linestart+'])'+newline+newline+'([^\\n])','gi');
+  ['opis','zakl'].forEach(function(id){
+    setText(id, getText(id).replaceAll(re,'\$1\n\$2'));
+  })
+}
+
     function onBodyClick(){
       dropdown_click = 0
     }
+
+    function getPars(id){
+        return _('#smart-'+id).getElementsByClassName('p').map(function(p){return p.innerText});
+    }
+
+    function onDownloadClick(){
+        generateAndDownloadDocx([getPars('opis'),getPars('zakl')]);
+    }
+
+    function onIndentChange(){
+        ['opis','zakl'].forEach(function(id){
+            setNoIndent(_('#smart-'+id), !_('#cbIndent').checked);
+        });
+    }
+
 
     function onBodyLoad(){
       _ST.init(_('#smart-opis'));
@@ -70,8 +125,6 @@
 
     function onTestClick(e){
         console.log(e);
-
-        loadAndUnzip(zipFileUrl);
     }
 
     manager = new TrieManager();
@@ -83,11 +136,21 @@
     <button id="btnTest" onclick="onTestClick(this);">TEST</button>
     <div class="container-fluid">
         <div class="container py-4 text-center sheet-width">
-            <h1>Welcome to EP ZAKL</h1>
+            <!-- <h1>Welcome to EP ZAKL</h1> -->
             <p class="sectionTitle">Описание:</p>
             <div id="smart-opis" class="smart" style="" contenteditable="true"></div>
             <p class="sectionTitle zakl">Заключение:</p>
             <div id="smart-zakl" class="smart"style="" contenteditable="true"></div>
+  <button id="word" onclick="onDownloadClick();" class="bottombtn" title="Просто скачать Word для заключения, в текущем состоянии">⯯<img class="icon" src="misc/word.png"></button>
+
+  <input type="checkbox" id="cbIndent" onchange="onIndentChange();">Отступы
+  <div id="newlines" style="display: inline; border: 1px solid grey; padding: 5px; border-radius: 3px;">
+    Пустая&nbsp;строка&nbsp;между&nbsp;абзацами
+    <button id="btnAddNewline" onclick="onAddNewline();">+</button>
+    <button id="btnRemoveNewline" onclick="onRemoveNewline();">-</button>
+  </div>
+
+
         </div>  
     </div>
 
