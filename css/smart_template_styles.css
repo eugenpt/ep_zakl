@@ -426,3 +426,10 @@ input:checked + .slider:before {
 .bold {
 	font-weight: bold;
 }
+
+
+p.sectionTitle {
+    text-align: left;
+    font-weight: bold;
+    font-size: larger;
+}

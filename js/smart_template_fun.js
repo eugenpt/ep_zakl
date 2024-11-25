@@ -671,7 +671,7 @@ function pretty_round_number(n){
 		return n.toFixed(1).replace('.', ',').replace(',0','');
 	}
 	if((n>=4.25)&&(n<=4.75)){
-		return (4.5).toFixed(1)
+		return (4.5).toFixed(1).replace('.', ',');
 	}
 	if(n<35){
 		return n.toFixed(0);
