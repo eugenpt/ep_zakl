@@ -106,13 +106,21 @@ function onRemoveNewline(){
     }
 
     function onDownloadClick(){
-        generateAndDownloadDocx([getPars('opis'),getPars('zakl')]);
+        generateAndDownloadDocx([getPars('opis'),getPars('zakl')], _('#cbIndent').checked);
     }
 
     function onIndentChange(){
         ['opis','zakl'].forEach(function(id){
             setNoIndent(_('#smart-'+id), !_('#cbIndent').checked);
         });
+    }
+
+    function onNewlineChange(){
+        if(_('#cbNewline').checked){
+            onAddNewline();
+        }else {
+            onRemoveNewline();
+        }
     }
 
 
@@ -143,13 +151,8 @@ function onRemoveNewline(){
             <div id="smart-zakl" class="smart"style="" contenteditable="true"></div>
   <button id="word" onclick="onDownloadClick();" class="bottombtn" title="Просто скачать Word для заключения, в текущем состоянии">⯯<img class="icon" src="misc/word.png"></button>
 
-  <input type="checkbox" id="cbIndent" onchange="onIndentChange();">Отступы
-  <div id="newlines" style="display: inline; border: 1px solid grey; padding: 5px; border-radius: 3px;">
-    Пустая&nbsp;строка&nbsp;между&nbsp;абзацами
-    <button id="btnAddNewline" onclick="onAddNewline();">+</button>
-    <button id="btnRemoveNewline" onclick="onRemoveNewline();">-</button>
-  </div>
-
+  <input type="checkbox" id="cbIndent" onchange="onIndentChange();" checked>Отступы
+  <input type="checkbox" id="cbNewline" onchange="onNewlineChange();">Пустая&nbsp;строка&nbsp;между&nbsp;абзацами
 
         </div>  
     </div>

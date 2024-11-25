@@ -1,8 +1,13 @@
 
-function generateAndDownloadDocx(parss){
+function generateAndDownloadDocx(parss, indent){
 
 
     AFTER = 0; //200;
+    firstLineIndent = 0;
+    
+    if (indent){
+        firstLineIndent = 426;        
+    }
 
     // Create a new document
     const doc = new docx.Document({
@@ -22,6 +27,9 @@ function generateAndDownloadDocx(parss){
                             size: 24
                         })
                     ],
+                    indent: {
+                        firstLine: firstLineIndent  // 720 twips = 1 inch (1 inch = 720 twips)
+                    },
                     spacing: {
                         after: AFTER
                     }
@@ -32,6 +40,9 @@ function generateAndDownloadDocx(parss){
                             size: 24
                         })
                     ],
+                    indent: {
+                        firstLine: firstLineIndent  // 720 twips = 1 inch (1 inch = 720 twips)
+                    },
                     spacing: {
                         after: AFTER
                     }
@@ -44,6 +55,9 @@ function generateAndDownloadDocx(parss){
                                 size: 24
                             })
                         ],
+                        indent: {
+                            firstLine: firstLineIndent  // 720 twips = 1 inch (1 inch = 720 twips)
+                        },
                         spacing: {
                             before: 200,
                             after: AFTER
@@ -58,6 +72,9 @@ function generateAndDownloadDocx(parss){
                                     size: 24
                                 })
                             ],
+                            indent: {
+                                firstLine: firstLineIndent  // 720 twips = 1 inch (1 inch = 720 twips)
+                            },
                             spacing: {
                                 after: AFTER
                             }
