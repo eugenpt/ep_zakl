@@ -31,6 +31,9 @@ class TrieManager {
   /** @type {number} */
   static BATCH_SIZE = 1000;
 
+  /** @type {AbortController|null} */
+  #abortController = null;
+
   /**
    * Initialize the TrieManager
    */
@@ -227,6 +230,13 @@ class TrieManager {
     });
   }
 
+  abort() {
+    if (this.#abortController) {
+      this.#abortController.abort();
+      console.log('Aborting ongoing operation.');
+    }
+  }
+
   /**
    * Search for phrases that start with the given prefix, properly sorted by count
    * @param {string} searchText 
@@ -234,6 +244,9 @@ class TrieManager {
    * @returns {Promise<PhraseCount[]>}
    */
   async searchPhrases(searchText, limit = 50) {
+    this.#abortController = new AbortController();
+    const signal = this.#abortController.signal;
+
     return new Promise((resolve, reject) => {
       const transaction = this.#db.transaction(TrieManager.STORE_NAME, 'readonly');
       const store = transaction.objectStore(TrieManager.STORE_NAME);
@@ -248,9 +261,15 @@ class TrieManager {
       const request = store.index('phraseLower').openCursor(range);
 
       request.onsuccess = (event) => {
+        if (signal.aborted) {
+          console.log('Search aborted.');
+          reject(new Error('Search aborted.'));
+          return;
+        }
+
         const cursor = event.target.result;
         if (cursor) {
-          results.push({
+            results.push({
             phrase: cursor.value.phrase,
             count: cursor.value.count
           });
@@ -259,12 +278,64 @@ class TrieManager {
           // After collecting all results, sort by count
           results.sort((a, b) => b.count - a.count);
           // Return only the requested number of results
+          console.log('resolving ('+limit+' out of '+results.length+' total for prefix='+searchText)
           resolve(results.slice(0, limit));
         }
       };
 
       request.onerror = () => reject(new Error('Search failed'));
     });
+  }
+
+
+  /**
+   * Search phrases for all prefixes concurrently, aggregate results, and include pre_prefix logic.
+   * @param {string} text - The input text to generate prefixes.
+   * @param {string} pre_prefix - The prefix to add before the resulting phrases.
+   * @param {number} [limit=50] - Maximum number of results to retrieve for each prefix.
+   * @returns {Promise<PhraseCount[]>} Aggregated and sorted results.
+   */
+  async searchPhrasesForAllPrefixes(text, limit = 50, order_by_both_rel_word_log_weight=2) {
+    const words = text.split(' ');
+    const resultsMap = new Map(); // To store results for all prefixes
+    const promises = [];
+
+    // Generate promises for each prefix
+    for (let i = Math.max(0, words.length - 5); i < words.length; i++) {
+      const output_prefix = words.slice(0, i).join(' ') + (i>0 ? ' ' : ''); // Build the prefix to add to each result
+      const prefix = words.slice(i).join(' '); // The actual prefix for searching
+      if (prefix.length === 0) break;
+
+      // Create a promise for each prefix search
+      const promise = this.searchPhrases(prefix, limit).then((results) => {
+        // Merge results from each prefix
+        results.forEach((result) => {
+          const fullPhrase = output_prefix + result.phrase; // Combine the output_prefix with the result phrase
+          if (resultsMap.has(fullPhrase)) {
+            resultsMap.set(fullPhrase, [words.length-i, resultsMap.get(fullPhrase)[1] + result.count]);
+          } else {
+            resultsMap.set(fullPhrase, [words.length-i, result.count]);
+          }
+        });
+      });
+      promises.push(promise);
+    }
+
+    // Wait for all search promises to resolve
+    await Promise.all(promises);
+
+    // Convert resultsMap to array and sort by count (descending)
+    const sortedResults = Array.from(resultsMap.entries()).map(([phrase, WCnC]) => ({ phrase, count:WCnC[1], n_words:WCnC[0] }));
+
+    // Sort results by count
+    
+    function sorting_fun(a){
+      return Math.log10(a.count) + order_by_both_rel_word_log_weight * a.n_words;
+    }
+    sortedResults.sort((a, b) => sorting_fun(b) - sorting_fun(a));
+
+    // Return the top `limit` results
+    return sortedResults.slice(0, limit);
   }
 
   /**
