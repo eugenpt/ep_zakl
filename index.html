@@ -184,6 +184,11 @@ function onRemoveNewline(){
             fillTemplate('Головной мозг');
         }
     }
+    function onInsertTemplate2(){
+        if(allEmpty() || (window.confirm("Заменить весь текст на шаблон?"))) {
+            fillTemplate('Позвоночник');
+        }
+    }
 
     manager = new TrieManager();
     manager.initialize().then(()=>manager.loadFromZip(zipFileUrl));
@@ -194,7 +199,8 @@ function onRemoveNewline(){
     <!-- <button id="btnTest" onclick="onTestClick(this);">TEST</button> -->
     <div class="container-fluid">
         <div class="container py-4 text-center sheet-width">
-            <button id="btnInsert" onclick="onInsertTemplate(this);">Вставить шаблон</button>
+            <button id="btnInsert" onclick="onInsertTemplate(this);">Вставить шаблон ГМ</button>
+            <button id="btnInsert" onclick="onInsertTemplate2(this);">Позвоночник</button>
             <button id="btnInsert" onclick="onClear(this);">Очистить всё</button>
             <!-- <h1>Welcome to EP ZAKL</h1> -->
             <p class="sectionTitle">Описание:</p>
