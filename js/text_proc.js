@@ -149,3 +149,73 @@ function str_matches_q(str, q){
   }
   return true
 }
+
+
+///
+
+
+function cutStartRegexp(text, regexp){
+  m = text.match(regexp);
+  if(m){
+    return text.slice(m.index + m[0].length);
+  }
+  return text.slice();
+}
+
+function cutRegexpOut(text, regexp){
+  m = text.match(regexp);
+  if(m){
+    return text.slice(0, m.index) + text.slice(m.index + m[0].length);
+  }
+  return text.slice();  
+}
+
+
+function cutDiagInfo(text){
+  var regexp = /^\s*(Диагноз +при +направлении: *.*)[\r\n]+/mi;
+  m = text.match(regexp);
+  if(!m){
+      regexp = /^\s*(Клиническая +ситуация *: *.*)[\r\n]+/mi;
+      m = text.match(regexp);
+  }
+  var diag = '';
+  if(m){
+    diag = m[1];
+
+    return [diag,text.slice(m.index + m[0].length)];
+  } 
+  return ['', text.slice()];    
+}
+
+function cutHeadGetDiag(text){
+  text = cutStartRegexp(text, /^\s*Ф. ?И. ?О.*[\r\n]+/mi);
+  text = cutStartRegexp(text, /^\s*Дата +рождения.*[\r\n]+/mi);
+  text = cutStartRegexp(text, /^\s*ЭМК +№.*[\r\n]+/mi);
+  text = cutStartRegexp(text, /^\s*Дата +исследования.*[\r\n]+/mi);
+
+  text = cutRegexpOut(text,  /^\s*Диагноз +при +направлении:\s*$/mi); // no empty diag
+  
+  X = cutDiagInfo(text);
+  text = X[1];
+
+  text = cutStartRegexp(text, /^\s*Описание:\s*/mi);
+  text = cutStartRegexp(text, /^\s*Протокол исследования\s*[.:]\s*/mi);
+  return [X[0], text];
+}
+
+function cutZakl(text){
+  let zakl = "";
+
+  m = text.match(/[\n]+\s*Заключение\s*:?\s*/i)
+  if(m){
+    zakl = text.slice(m.index + m[0].length);
+    text = text.slice(0, m.index);
+  }
+
+  m = zakl.match(/[\n]+\s*Врач/);
+  if(m){
+    zakl = zakl.slice(0, m.index);
+  }
+
+  return [text, zakl];
+}

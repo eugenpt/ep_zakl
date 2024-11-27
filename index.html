@@ -124,16 +124,65 @@ function onRemoveNewline(){
         }
     }
 
+    function parseOpisZaklAndPaste(pastedText){
+        X = cutHeadGetDiag(pastedText);
+        diag = X[0];
+        text = X[1];
+        X = cutZakl(text);
+        console.log(X);
+        text = X[0];
+        zakl = X[1];
+
+        fillTemplate([(diag ? diag+'\n' : '') +text, zakl])
+    }
+
+    function allEmpty(){
+        return ((getText('opis')=='') && (getText('zakl')==''));
+    }
+
+    function onTextPaste(e){
+        console.log('onOpisPaste')
+        console.log(e);
+        clipboardData = e.clipboardData || window.clipboardData;
+        pastedData = clipboardData.getData('Text');
+
+        console.log(pastedData)
+
+        pastedData = pastedData.replace(/^[\s]+/,'').replaceAll(/\r?\n\s+/gmi,'\n');
+
+        if(allEmpty()){
+            parseOpisZaklAndPaste(pastedData);
+        } else {
+            insertTextAtCaret(pastedData)
+        }
+
+        e.preventDefault();
+        e.stopPropagation();
+    }
 
     function onBodyLoad(){
       _ST.init(_('#smart-opis'));
       _ST.init(_('#smart-zakl'));   
 
-      fillTemplate('Головной мозг');
+      fillTemplate(['',''])
+
+      _('#smart-opis').onpaste = onTextPaste;
+      _('#smart-zakl').onpaste = onTextPaste;
     }
 
     function onTestClick(e){
         console.log(e);
+    }
+
+    function onClear(){
+        if(allEmpty() || (window.confirm("Убрать весь текст?"))) {
+            fillTemplate(['','']);
+        }
+    }
+    function onInsertTemplate(){
+        if(allEmpty() || (window.confirm("Заменить весь текст на шаблон?"))) {
+            fillTemplate('Головной мозг');
+        }
     }
 
     manager = new TrieManager();
@@ -145,16 +194,19 @@ function onRemoveNewline(){
     <!-- <button id="btnTest" onclick="onTestClick(this);">TEST</button> -->
     <div class="container-fluid">
         <div class="container py-4 text-center sheet-width">
+            <button id="btnInsert" onclick="onInsertTemplate(this);">Вставить шаблон</button>
+            <button id="btnInsert" onclick="onClear(this);">Очистить всё</button>
             <!-- <h1>Welcome to EP ZAKL</h1> -->
             <p class="sectionTitle">Описание:</p>
             <div id="smart-opis" class="smart" style="" contenteditable="true"></div>
             <p class="sectionTitle zakl">Заключение:</p>
             <div id="smart-zakl" class="smart"style="" contenteditable="true"></div>
-  <button id="word" onclick="onDownloadClick();" class="bottombtn" title="Просто скачать Word для заключения, в текущем состоянии">⯯<img class="icon" src="misc/word.png"></button>
 
-  <input type="checkbox" id="cbIndent" onchange="onIndentChange();" checked>Отступы
-  <input type="checkbox" id="cbNewline" onchange="onNewlineChange();">Пустая&nbsp;строка&nbsp;между&nbsp;абзацами
-
+            <div id="footer-controls">
+              <button id="word" onclick="onDownloadClick();" class="bottombtn" title="Просто скачать Word для заключения, в текущем состоянии">⯯<img class="icon" src="misc/word.png"></button>
+              <input type="checkbox" id="cbIndent" onchange="onIndentChange();" checked>Отступы
+              <input type="checkbox" id="cbNewline" onchange="onNewlineChange();">Пустая&nbsp;строка&nbsp;между&nbsp;абзацами
+            </div>
         </div>  
     </div>
 
