@@ -19,8 +19,13 @@ _SUGG_SELECTED_CLASSNAME = 'selected';
 
 _SUGG_after_click_timeout = null;
 
-_MAX_SUGG_BEFORE_WORDS = 5;
+_MAX_SUGG_BEFORE_WORDS = 10;
 
+_order_by_both_rel_word_log_weight = 2;
+
+_SUGG_VERTEBRAE_EQ_ADD_COUNT = 10000;
+
+__SUGG_VERTEBRAE_EQ_ADD_LOG10_WEIGHT = Math.log10(_SUGG_VERTEBRAE_EQ_ADD_COUNT);
 
 function sugg_init(editor){
 	console.log('sugg_init on #' + editor.id);
@@ -243,6 +248,12 @@ function getPhraseSuggesions_old(before, onload){
 	// onload(Results)
 }
 
+const vertebraeRegex = /\b(?:C[1-7]|Th?(?:1[0-2]|[1-9])|L[1-5]|S[1-5]|Co[1-5])/;
+
+function hasVertebraeAbbreviation(input) {
+  return vertebraeRegex.test(input);
+}
+
 let currentRequestId = null; // Global or scoped variable to track the current request
 let lastBefore = null;
 async function getPhraseSuggesions(before, limit = 10) {
@@ -261,7 +272,12 @@ async function getPhraseSuggesions(before, limit = 10) {
 
       let suggestions = [];
 
-      suggestions = manager.searchPhrasesForAllPrefixes(before, 5)
+      suggestions = manager.searchPhrasesForAllPrefixes(
+      	before, 
+      	_MAX_SUGG_BEFORE_WORDS, 
+      	_order_by_both_rel_word_log_weight, 
+      	(a)=>{return hasVertebraeAbbreviation(a.phrase)?__SUGG_VERTEBRAE_EQ_ADD_LOG10_WEIGHT:0}
+    	)
 
       if (currentRequestId === requestId) {
         resolve(suggestions); // Resolve only if this is still the active request

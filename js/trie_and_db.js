@@ -23,7 +23,7 @@ class TrieManager {
   static DB_NAME = 'phraseTrieDB';
   
   /** @type {number} */
-  static DB_VERSION = 3;
+  static DB_VERSION = 1;
   
   /** @type {string} */
   static STORE_NAME = 'phrases';
@@ -77,13 +77,13 @@ class TrieManager {
 
         // Create new object store with indexes
         const store = db.createObjectStore(TrieManager.STORE_NAME, { keyPath: 'phrase' });
-        store.createIndex('count', 'count', { unique: false });
-        store.createIndex('length', 'length', { unique: false });
+        // store.createIndex('count', 'count', { unique: false });
+        // store.createIndex('length', 'length', { unique: false });
         store.createIndex('phraseLower', 'phraseLower', { unique: false });
         // Add compound index for prefix+count queries
-        store.createIndex('phrase_count', ['phrase', 'count'], { unique: false });
+        // store.createIndex('phrase_count', ['phrase', 'count'], { unique: false });
         // Add compound index for efficient case-insensitive prefix search
-        store.createIndex('phrase_lower_count', ['phraseLower', 'count'], { unique: false });
+        // store.createIndex('phrase_lower_count', ['phraseLower', 'count'], { unique: false });
       };
 
       request.onsuccess = () => resolve(request.result);
@@ -295,7 +295,7 @@ class TrieManager {
    * @param {number} [limit=50] - Maximum number of results to retrieve for each prefix.
    * @returns {Promise<PhraseCount[]>} Aggregated and sorted results.
    */
-  async searchPhrasesForAllPrefixes(text, limit = 50, order_by_both_rel_word_log_weight=2) {
+  async searchPhrasesForAllPrefixes(text, limit = 50, order_by_both_rel_word_log_weight=2, add_log10_weight_fun=(x)=>0) {
     const words = text.split(' ');
     const resultsMap = new Map(); // To store results for all prefixes
     const promises = [];
@@ -330,7 +330,7 @@ class TrieManager {
     // Sort results by count
     
     function sorting_fun(a){
-      return Math.log10(a.count) + order_by_both_rel_word_log_weight * a.n_words;
+      return Math.log10(a.count) + order_by_both_rel_word_log_weight * a.n_words + add_log10_weight_fun(a);
     }
     sortedResults.sort((a, b) => sorting_fun(b) - sorting_fun(a));
 
