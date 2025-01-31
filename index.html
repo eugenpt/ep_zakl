@@ -161,6 +161,10 @@ function onRemoveNewline(){
     }
 
     function onBodyLoad(){
+
+      manager = new TrieManager();
+      manager.initialize().then(()=>manager.loadFromZip(zipFileUrl));
+
       _ST.init(_('#smart-opis'));
       _ST.init(_('#smart-zakl'));   
 
@@ -169,6 +173,25 @@ function onRemoveNewline(){
       _('#smart-opis').onpaste = onTextPaste;
       _('#smart-zakl').onpaste = onTextPaste;
     }
+
+    function toggleDropdown(event) {
+      event.stopPropagation(); // Prevents immediate closure when clicking the button
+      const dropdown = document.getElementById("templatesDropdown");
+      
+      // Toggle between showing and hiding the dropdown
+      dropdown.style.display = (dropdown.style.display === "block") ? "none" : "block";
+    }
+
+    // Hide the dropdown when clicking outside of it
+    window.addEventListener('click', function(event) {
+      const dropdown = document.getElementById("templatesDropdown");
+      const button = document.querySelector('.dropbtn');
+
+      // Close dropdown only if click is outside both the button and the dropdown
+      if (event.target !== button && !button.contains(event.target) && !dropdown.contains(event.target)) {
+        dropdown.style.display = "none";
+      }
+    });
 
     function onTestClick(e){
         console.log(e);
@@ -190,18 +213,26 @@ function onRemoveNewline(){
         }
     }
 
-    manager = new TrieManager();
-    manager.initialize().then(()=>manager.loadFromZip(zipFileUrl));
-
 </script>
 </head>
 <body onload="onBodyLoad();" onclick="onBodyClick();">
     <!-- <button id="btnTest" onclick="onTestClick(this);">TEST</button> -->
     <div class="container-fluid">
         <div class="container py-4 text-center sheet-width">
-            <button id="btnInsert" onclick="onInsertTemplate(this);">Вставить шаблон ГМ</button>
-            <button id="btnInsert" onclick="onInsertTemplate2(this);">Позвоночник</button>
-            <button id="btnInsert" onclick="onClear(this);">Очистить всё</button>
+            <button id="btnInsert" class="btn" onclick="onClear(this);">Очистить всё</button>
+
+            <!-- New dropdown button for templates -->
+            <div class="dropdown">
+              <!-- A real button for opening the dropdown -->
+              <button class="btn" onclick="toggleDropdown(event)">...</button>
+              
+              <!-- Dropdown menu (hidden by default) -->
+              <div class="dropdown-content" id="templatesDropdown">
+                <button onclick="onInsertTemplate(); toggleDropdown(event);">Вставить шаблон ГМ</button>
+                <button onclick="onInsertTemplate2(); toggleDropdown(event);">Позвоночник</button>
+              </div>
+            </div>
+
             <!-- <h1>Welcome to EP ZAKL</h1> -->
             <p class="sectionTitle">Описание:</p>
             <div id="smart-opis" class="smart" style="" contenteditable="true"></div>
