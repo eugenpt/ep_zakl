@@ -2,11 +2,14 @@ import zipfile
 import json
 import re
 
-with open('filter_words.txt', 'r') as f:
+with open('filter_words.txt', 'r', encoding='utf-8') as f:
     words = f.readlines()
 words = [S.replace('\n','') for S in words]
 
+said = {}
+
 def is_valid_key(key):
+    global said
     if '\t' in key:
         return False
 
@@ -18,6 +21,9 @@ def is_valid_key(key):
 
     for s in words:
         if s in key:
+            if not key in said:
+                print(f"{s} in {key}")
+                said[key] = 1
             return False
 
     # Check if the key is a date (assuming format YYYY-MM-DD)
