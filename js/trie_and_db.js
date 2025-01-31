@@ -23,7 +23,7 @@ class TrieManager {
   static DB_NAME = 'phraseTrieDB';
   
   /** @type {number} */
-  static DB_VERSION = 1;
+  static DB_VERSION = 3;
   
   /** @type {string} */
   static STORE_NAME = 'phrases';
