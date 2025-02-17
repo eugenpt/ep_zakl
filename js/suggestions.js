@@ -3,7 +3,7 @@ _M.id='livesearch';
 _M.style.width='10px';
 _M.style.height='10px';
 _M.style.backgroundColor='#ddd';
-_M.style.position='absolute';
+//_M.style.position='absolute';
 _M_List = _ce('ul');
 _M.appendChild(_M_List);
 
