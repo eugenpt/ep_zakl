@@ -563,7 +563,7 @@ function updateCursorPosition(){
 	
 
 
-	_M.style.top = (_C.y + window.scrollY + getSelectionFontSize() + 10)+'px';
+	_M.style.top = (_C.y  + getSelectionFontSize() + 10)+'px'; // + window.scrollY
 	_M.style.left = _C.x+'px';
 }
 
